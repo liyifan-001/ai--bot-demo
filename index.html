@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 客服助理 · 体验 Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(160deg, #f7f4eb 0%, #eef3ef 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #16352a;
+  }
+  .card {
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 48px 32px;
+    box-shadow: 0 20px 60px rgba(22,53,42,.12);
+  }
+  .badge {
+    display: inline-block;
+    background: #2e5947;
+    color: #fff;
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+  .sub { font-size: 15px; color: #5a6f64; line-height: 1.7; margin-bottom: 28px; }
+  .hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #c2913d;
+  }
+  .arrow { font-size: 22px; animation: bounce 1.2s infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(6px); }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">AI 客服 · 演示 Demo</span>
+    <h1>你好，我是 AI 客服助理</h1>
+    <p class="sub">关于商品、退换货、兑奖、常见问题，都可以直接问我。<br>点右下角的聊天气泡，开始对话 👇</p>
+    <div class="hint">
+      <span>聊天的入口在右下角</span>
+      <span class="arrow">→</span>
+    </div>
+  </div>
+
+  <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.20/libs/cn/index.js"></script>
+  <script>
+    new CozeWebSDK.WebChatClient({
+      config: {
+        bot_id: '7679320587231592475',
+      },
+      componentProps: {
+        title: 'AI 客服助理',
+      },
+      auth: {
+        type: 'token',
+        token: 'pat_npzRJKpbl17B8CKHyaebh0Ujlns86B1jPGJnZxWRrIddeIq1WyGS4r4tIEMbmuPk',
+        onRefreshToken: function () {
+          return 'pat_npzRJKpbl17B8CKHyaebh0Ujlns86B1jPGJnZxWRrIddeIq1WyGS4r4tIEMbmuPk'
+        }
+      }
+    });
+  </script>
+</body>
+</html>
