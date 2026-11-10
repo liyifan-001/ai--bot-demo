@@ -2,81 +2,435 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>丛台旅游小助手 · 体验 Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>丛台旅游小助手</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: linear-gradient(160deg, #f7f4eb 0%, #eef3ef 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
+    background: #f5f3ee;
     color: #16352a;
+    -webkit-font-smoothing: antialiased;
   }
-  .card {
-    max-width: 520px;
-    width: 100%;
-    text-align: center;
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 48px 32px;
-    box-shadow: 0 20px 60px rgba(22,53,42,.12);
+  .app {
+    max-width: 560px;
+    margin: 0 auto;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: #f5f3ee;
   }
-  .badge {
-    display: inline-block;
+  /* 顶部 */
+  header {
+    background: linear-gradient(135deg, #2e5947 0%, #16352a 100%);
+    color: #fff;
+    padding: 18px 20px 16px;
+    flex-shrink: 0;
+  }
+  header .title-row { display: flex; align-items: center; gap: 10px; }
+  header .logo {
+    width: 34px; height: 34px;
+    background: #c2913d;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  header h1 { font-size: 19px; font-weight: 700; letter-spacing: .5px; }
+  header .sub { font-size: 12px; color: rgba(255,255,255,.72); margin-top: 4px; }
+  /* 聊天区 */
+  .chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .msg { display: flex; flex-direction: column; max-width: 84%; }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.bot { align-self: flex-start; align-items: flex-start; }
+  .bubble {
+    padding: 11px 14px;
+    font-size: 15px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .msg.bot .bubble {
+    background: #fff;
+    border-radius: 4px 16px 16px 16px;
+    box-shadow: 0 1px 4px rgba(22,53,42,.06);
+  }
+  .msg.user .bubble {
     background: #2e5947;
     color: #fff;
-    font-size: 13px;
-    padding: 6px 16px;
-    border-radius: 999px;
-    letter-spacing: 1px;
-    margin-bottom: 20px;
+    border-radius: 16px 4px 16px 16px;
   }
-  h1 { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
-  .sub { font-size: 15px; color: #5a6f64; line-height: 1.7; margin-bottom: 28px; }
-  .hint {
+  .msg .tag { font-size: 11px; color: #8a948e; margin-bottom: 4px; }
+  /* 快捷问题 */
+  .quick {
+    flex-shrink: 0;
+    padding: 6px 0 10px;
+    border-top: 1px solid #ece8df;
+    background: #f5f3ee;
+  }
+  .quick .label { font-size: 11px; color: #8a948e; padding: 4px 16px 8px; }
+  .quick .chips {
     display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 8px;
+    padding: 0 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .quick .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #2e5947;
+    background: #eef3ef;
+    border: 1px solid #d9e4dc;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+  .chip:active { background: #dceadf; }
+  /* 输入栏 */
+  .inputbar {
+    flex-shrink: 0;
+    display: flex;
+    gap: 10px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: #fff;
+    border-top: 1px solid #ece8df;
+  }
+  .inputbar input {
+    flex: 1;
+    border: 1px solid #d9e4dc;
+    border-radius: 999px;
+    padding: 11px 16px;
     font-size: 15px;
-    font-weight: 600;
-    color: #c2913d;
+    color: #16352a;
+    outline: none;
+    background: #f7f6f2;
   }
-  .arrow { font-size: 22px; animation: bounce 1.2s infinite; }
-  @keyframes bounce {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(6px); }
+  .inputbar input:focus { border-color: #2e5947; background: #fff; }
+  .inputbar button {
+    width: 44px; height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: #2e5947;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
   }
+  .inputbar button:active { background: #16352a; }
+  .typing { color: #8a948e; font-size: 14px; }
 </style>
 </head>
 <body>
-  <div class="card">
-    <span class="badge">丛台景区 · 智能导览</span>
-    <h1>你好，我是丛台旅游小助手</h1>
-    <p class="sub">景区门票、开放时间、路线、美食，都可以直接问我。<br>点右下角的聊天气泡，开始对话 👇</p>
-   
+  <div class="app">
+    <header>
+      <div class="title-row">
+        <span class="logo">🌿</span>
+        <h1>丛台旅游小助手</h1>
+      </div>
+      <div class="sub">门票 · 开放时间 · 路线 · 美食 · 典故，随时问我</div>
+    </header>
 
-  <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.20/libs/cn/index.js"></script>
-  <script>
-    new CozeWebSDK.WebChatClient({
-      config: {
-        bot_id:'7698362597564792851',
-      },
-      componentProps: {
-        title: '丛台旅游小助手',
-      },
-      auth: {
-        type: 'token',
-        token: 'pat_eCW6LpAlBAHEdSBzWcl9f1ijqalZ1M3MapWsmo1topiPsXCGqGMYozt3txnOwG5u',
-        onRefreshToken: function () {
-          return 'pat_eCW6LpAlBAHEdSBzWcl9f1ijqalZ1M3MapWsmo1topiPsXCGqGMYozt3txnOwG5u'
-        }
+    <div class="chat" id="chat"></div>
+
+    <div class="quick">
+      <div class="label">常见问题 · 点一下直接问</div>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="inputbar">
+      <input id="input" type="text" placeholder="输入你的问题…" autocomplete="off">
+      <button id="send">➤</button>
+    </div>
+  </div>
+
+<script>
+/* ============================================================
+ *  丛台旅游小助手 · 去扣子化版本（纯前端规则引擎）
+ *  ------------------------------------------------------------
+ *  这个页面不依赖扣子、不依赖任何服务器、不依赖大模型 API，
+ *  把「高频问答 + 六大景点」直接内置在前端，扫码打开就能用。
+ *
+ *  设计思路（答辩可讲）：
+ *  1. 高频问题（门票/时间/地址/预约/典故）→ 本地规则秒回，
+ *     零成本、零延迟、永不失联；
+ *  2. 长尾开放问题 → 后续接大模型 API 增强（见文末 LLM 接口预留）。
+ *  ============================================================ */
+
+/* ---------- 一、特殊全局问答（优先匹配，防止歧义） ---------- */
+const globalRules = [
+  {
+    keys: ["免费景点", "哪些免费", "有什么免费", "免费的地方", "哪些景点免费"],
+    answer: "丛台区免费景点：\n· 丛台公园（登武灵丛台+七贤祠联票约5元）\n· 赵苑公园\n· 学步桥\n· 邯郸市博物馆（免费，但需小程序预约）"
+  },
+  {
+    keys: ["预约"],
+    answer: "邯郸市博物馆免费，但需通过微信小程序「邯郸市博物馆」预约。\n开放时间：周二至周日 9:00-17:00，周一闭馆（节假日正常开放）。"
+  },
+  {
+    keys: ["美食", "吃什么", "好吃", "特色", "餐厅", "赵都礼宴", "春满园", "推荐美食"],
+    answer: "推荐两家本地特色：\n· 赵都礼宴——战国文化主题餐秀，中华北大街149号\n· 春满园——成语菜品，和平路450号滏东店"
+  },
+  {
+    keys: ["一日游", "路线", "行程", "攻略", "怎么安排", "怎么玩", "游玩"],
+    answer: "丛台区一日游推荐：\n上午：邯郸市博物馆\n中午：赵都礼宴 / 春满园\n下午：丛台公园（登武灵丛台）\n傍晚：漫步学步桥、邯郸道"
+  },
+  {
+    keys: ["停车"],
+    answer: "丛台公园周边有祥丰大厦、鹿城国际等停车场，一般 5-10 元/小时。"
+  },
+  {
+    keys: ["代表邯郸", "最能代表", "哪个景点代表", "象征"],
+    answer: "武灵丛台——它是邯郸的象征，有「欲知邯郸，先登丛台」的说法。"
+  }
+];
+
+/* ---------- 二、六大景点库 ---------- */
+const spots = [
+  {
+    name: "丛台公园",
+    aliases: ["丛台公园", "武灵丛台", "丛台", "公园"],
+    ticket: "丛台公园免费开放；想登武灵丛台、看七贤祠，联票约 5 元/人。",
+    time: "夏季（约5-9月）5:00-22:00，冬季（约10-4月）5:30-21:00。",
+    location: "在中华北大街159号。公交1、3、17、25、27、29、33、202路等到「丛台公园」站；自驾导航「丛台公园东门」，周边有收费停车场。",
+    story: "武灵丛台始建于战国赵武灵王时期（前325-前299），是赵王检阅军队、观赏歌舞之地，也是「胡服骑射」改革的历史见证，距今2300多年。现存清代重修，高27米、三层，台顶据胜亭可俯瞰市区。",
+    extra: "电话 0310-3026820"
+  },
+  {
+    name: "七贤祠",
+    aliases: ["七贤祠", "七贤"],
+    ticket: "与武灵丛台联票，约 5 元/人。",
+    story: "纪念战国时期赵国的七位贤臣：韩厥、程婴、公孙杵臼、蔺相如、廉颇、李牧、赵奢，内有塑像和历代碑刻。"
+  },
+  {
+    name: "邯郸市博物馆",
+    aliases: ["博物馆", "邯郸市博物馆"],
+    ticket: "免费，但需通过微信小程序「邯郸市博物馆」预约。",
+    time: "周二至周日 9:00-17:00，周一闭馆（节假日正常开放）。",
+    location: "在丛台区人民东路399号（文化艺术中心西侧）。",
+    story: "国家一级博物馆。看点：战国青铜马（比「马踏飞燕」早约400年）、「邯郸微笑」唐代红砂石罗汉造像、磁山文化文物。"
+  },
+  {
+    name: "赵苑公园",
+    aliases: ["赵苑", "赵苑公园"],
+    ticket: "免费。",
+    time: "5月1日-10月31日 5:30-21:00；11月1日-4月30日 6:00-20:00。",
+    location: "在丛台区联纺路（四季青街道，桥西约200米）。",
+    story: "国家4A级景区，赵武灵王「胡服骑射」军事改革核心现场，有插箭岭、照眉池、梳妆台等。"
+  },
+  {
+    name: "学步桥",
+    aliases: ["学步桥"],
+    ticket: "免费。",
+    location: "在丛台区陵西大街322号（邯郸道历史文化街区北端）。",
+    story: "明代多孔桥梁，「邯郸学步」成语典故地（出自庄子《秋水》）。"
+  },
+  {
+    name: "黄粱梦吕仙祠",
+    aliases: ["黄粱梦", "吕仙祠", "黄粱梦吕仙祠", "黄梁梦"],
+    ticket: "30 元/人。",
+    time: "9:00-17:30。",
+    location: "在丛台区黄粱梦镇御西街。",
+    story: "国家3A级景区，「黄粱一梦（黄粱美梦）」成语典故地，吕洞宾点化卢生之处。"
+  }
+];
+
+/* ---------- 三、意图识别 ---------- */
+const intents = {
+  ticket:   /门票|多少钱|票价|收费|免费|几元|价格|要钱|票/,
+  time:     /几点|开放时间|开门|关门|营业|时间|几点开/,
+  location: /在哪|地址|怎么去|怎么走|位置|交通|公交|自驾|怎么到/,
+  story:    /来历|历史|典故|背景|是什么|介绍|看点|有什么|好玩|纪念/
+};
+
+/* ---------- 四、匹配引擎 ---------- */
+function findSpot(q) {
+  let best = null, bestLen = 0;
+  for (const s of spots) {
+    for (const a of s.aliases) {
+      if (q.indexOf(a) !== -1 && a.length > bestLen) {
+        best = s;
+        bestLen = a.length;
       }
-    });
-  </script>
+    }
+  }
+  return best;
+}
+
+function detectIntent(q) {
+  // 有多个意图时，按优先级：预约已在全局规则，这里按 ticket > time > location > story
+  const order = ["ticket", "time", "location", "story"];
+  for (const key of order) {
+    if (intents[key].test(q)) return key;
+  }
+  return null;
+}
+
+function answer(q) {
+  const text = q.trim();
+  if (!text) return null;
+
+  // 1) 先匹配全局特殊规则
+  for (const r of globalRules) {
+    for (const k of r.keys) {
+      if (text.indexOf(k) !== -1) return r.answer;
+    }
+  }
+
+  // 2) 景点 + 意图组合
+  const spot = findSpot(text);
+  const intent = detectIntent(text);
+
+  if (spot && intent && spot[intent]) {
+    let ans = spot[intent];
+    if (intent === "ticket" || intent === "time") {
+      ans += "\n（建议以景区现场公告为准）";
+    }
+    return ans;
+  }
+
+  // 3) 只提到景点，没问具体方面 → 给综合介绍
+  if (spot) {
+    const parts = [];
+    if (spot.story) parts.push(spot.story);
+    if (spot.ticket) parts.push("门票：" + spot.ticket.replace(/（.*）$/, ""));
+    if (spot.time) parts.push("开放时间：" + spot.time.replace(/（.*）$/, ""));
+    if (spot.location) parts.push("位置：" + spot.location);
+    if (spot.extra) parts.push(spot.extra);
+    return parts.join("\n");
+  }
+
+  // 4) 只问了某类问题，但没提景点 → 默认丛台公园
+  if (intent) {
+    const d = spots[0];
+    if (d[intent]) {
+      let ans = d[intent];
+      if (intent === "ticket" || intent === "time") {
+        ans += "\n（建议以景区现场公告为准）";
+      }
+      return ans;
+    }
+  }
+
+  // 5) 都没命中 → 兜底
+  return null;
+}
+
+/* ============================================================
+ *  五、界面渲染与交互
+ *  ============================================================ */
+const chatEl = document.getElementById("chat");
+const chipsEl = document.getElementById("chips");
+const inputEl = document.getElementById("input");
+const sendBtn = document.getElementById("send");
+
+const quickQuestions = [
+  "丛台公园门票多少钱",
+  "丛台公园几点开门",
+  "丛台公园怎么去",
+  "博物馆要预约吗",
+  "有哪些免费景点",
+  "一日游怎么安排",
+  "有什么特色美食",
+  "黄粱梦吕仙祠门票多少"
+];
+
+function addMsg(role, text) {
+  const wrap = document.createElement("div");
+  wrap.className = "msg " + role;
+  const tag = document.createElement("div");
+  tag.className = "tag";
+  tag.textContent = role === "bot" ? "丛台小助手" : "我";
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+  wrap.appendChild(tag);
+  wrap.appendChild(bubble);
+  chatEl.appendChild(wrap);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return wrap;
+}
+
+function renderChips() {
+  quickQuestions.forEach(q => {
+    const c = document.createElement("span");
+    c.className = "chip";
+    c.textContent = q;
+    c.onclick = () => ask(q);
+    chipsEl.appendChild(c);
+  });
+}
+
+function ask(q) {
+  addMsg("user", q);
+  // 模拟极短思考延迟，观感更自然
+  const typing = document.createElement("div");
+  typing.className = "msg bot";
+  const b = document.createElement("div");
+  b.className = "bubble typing";
+  b.textContent = "…";
+  typing.appendChild(b);
+  chatEl.appendChild(typing);
+  chatEl.scrollTop = chatEl.scrollHeight;
+
+  setTimeout(() => {
+    chatEl.removeChild(typing);
+    const ans = answer(q) || fallback();
+    addMsg("bot", ans);
+  }, 220);
+}
+
+function fallback() {
+  return "这个问题我暂时掌握得不够全，建议查官方渠道或到现场咨询。\n\n你可以点上面的常见问题，或问我：门票、开放时间、地址、典故、美食、路线。";
+}
+
+sendBtn.onclick = () => {
+  const v = inputEl.value.trim();
+  if (!v) return;
+  inputEl.value = "";
+  ask(v);
+};
+inputEl.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    sendBtn.click();
+  }
+});
+
+/* ---------- 启动 ---------- */
+renderChips();
+addMsg("bot", "你好，我是丛台旅游小助手 🌿\n\n关于丛台区的景点、门票、开放时间、路线、典故、美食，都可以直接问我。\n\n也可以点下面「常见问题」快速了解 👇");
+
+/* ============================================================
+ *  六、大模型增强接口（预留，答辩可讲）
+ *  ------------------------------------------------------------
+ *  当前版本靠本地规则已能覆盖高频问题，零依赖即可用。
+ *  若要处理「规则没覆盖的长尾问题」，可接大模型 API：
+ *
+ *  const LLM = {
+ *    enabled: false,          // 填好 key 并配置后端代理后设为 true
+ *    apiKey: '',              // 你的大模型 API Key（如 DeepSeek/豆包）
+ *    baseUrl: 'https://api.deepseek.com/chat/completions',
+ *    systemPrompt: '你是丛台旅游小助手，只回答丛台区景点相关，不编造信息…'
+ *  };
+ *
+ *  async function llmAnswer(q) { ... fetch(LLM.baseUrl, ...) ... }
+ *
+ *  注意：浏览器直调大模型 API 通常有跨域(CORS)限制，
+ *  正式上线需加一层后端代理（Serverless 函数），把 Key 放在服务端，
+ *  避免 Key 暴露在前端源码里被盗刷。
+ *  ============================================================ */
+</script>
 </body>
 </html>
